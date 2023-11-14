@@ -11,15 +11,17 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Test
+    - name: test cache
       id: test
       uses: actions/cache@v3
       with:
         path: test-file
         key: ${{ runner.os }}-test
 
-    - name: Generate Test File
-      run: echo "TEST2" > test-file
+    - name: Check test file
+      run: |
+        [ -f test-file ] && cat test-file
+        echo "TEST $GITHUB_RUN_ID" > test-file
 
-    - name: Use Prime Numbers
+    - name: Display test file
       run: cat test-file
