@@ -1,0 +1,25 @@
+name: Caching Primes
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Test
+      id: test
+      uses: actions/cache@v3
+      with:
+        path: test-file
+        key: ${{ runner.os }}-test
+
+    - name: Generate Test File
+      run: echo "TEST1" > test-file
+
+    - name: Use Prime Numbers
+      run: cat test-file
