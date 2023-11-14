@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      cache-key: test-file-key
 
     steps:
     - uses: actions/checkout@v3
@@ -16,7 +18,7 @@ jobs:
       uses: actions/cache/restore@v3
       with:
         path: test-file
-        key: ${{ runner.os }}-test
+        key: ${{ env.cache-key }}
 
     - name: Check test file
       run: |
@@ -26,8 +28,17 @@ jobs:
     - name: Display test file
       run: cat test-file
 
+    - name: Delete Previous Cache
+      if: ${{ steps.test-cache.outputs.cache-hit }}
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh extension install actions/gh-actions-cache
+        gh actions-cache delete "${{ env.cache-key }}" --confirm
+
     - name: Save test cache
       uses: actions/cache/save@v3
       with:
         path: test-file
-        key: ${{ steps.test-cache.outputs.cache-primary-key }}
+        key: ${{ env.cache-key }}
